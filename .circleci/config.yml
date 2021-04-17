@@ -1,0 +1,25 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build-and-test:
+    #working_directory: ~/src/
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-deps
+      - run: pip install pytest regex Pillow
+      - run:
+          #command: pytest -p no:cacheprovider
+          command: python -m pytest tests/
+          #command: python3 tests/test_csvs.py test
+          name: Test
+      - store_test_results:
+          path: test-results
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
