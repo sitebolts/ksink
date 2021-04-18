@@ -21,3 +21,29 @@ def create_csv_row(cell_strings, include_newline):
         row_string += '\n'
     
     return row_string
+
+
+#Auto-detect whether a CSV file is UTF-8 or UTF-16 and return the opened file
+#TODO: Make this more generic and support more character encodings
+def open_utf8_or_utf16_csv_file(filename, newline):
+    try:
+        csv_file = open(filename, newline=newline, encoding='utf-8')
+        csv_reader = csv.reader(csv_file, delimiter='\t', quotechar='"')
+        for exhaust in enumerate(csv_reader):
+            break #Only one iteration is needed
+        csv_file.seek(0)
+        return csv_file
+    except UnicodeError:
+        pass
+
+    try:
+        csv_file = open(filename, newline=newline, encoding='utf-16')
+        csv_reader = csv.reader(csv_file, delimiter='\t', quotechar='"')
+        for exhaust in enumerate(csv_reader):
+            break #Only one iteration is needed
+        csv_file.seek(0)
+        return csv_file
+    except UnicodeDecodeError:
+        pass
+
+    raise Exception("Could not read CSV file: Unsupported character encoding")
